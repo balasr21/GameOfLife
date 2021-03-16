@@ -90,7 +90,7 @@ public class SwaggerConfig {
                 license,
                 licenseUrl,
                 Collections.emptyList()
-        )).select().paths(PathSelectors.regex("^/odds/.*$")).build();
+        )).select().paths(PathSelectors.regex("^/start/.*$")).build();
     }
 
 }
