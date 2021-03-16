@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.gameoflife.exception.InvalidRequestException;
 import com.api.gameoflife.model.GameInput;
 import com.api.gameoflife.service.GameService;
 
@@ -30,7 +31,12 @@ public class GameController {
     @PostMapping("/")
     public ResponseEntity<List<Set<Integer>>> gameOfLife(@RequestBody GameInput input) {
         log.info("Game request received for Row[{}] Column[{}] initialPosition [{}]", input.getRow(), input.getColumn(), input.getPosition());
-        return new ResponseEntity<>(gameService.calculateMovements(input), HttpStatus.OK);
+        try {
+            gameService.calculateMovements(input);
+            return new ResponseEntity<>(gameService.calculateMovements(input), HttpStatus.OK);
+        } catch (InvalidRequestException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

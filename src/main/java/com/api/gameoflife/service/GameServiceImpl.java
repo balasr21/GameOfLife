@@ -8,7 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.stereotype.Service;
 
+import com.api.gameoflife.exception.InvalidRequestException;
 import com.api.gameoflife.model.GameInput;
+import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class GameServiceImpl implements GameService {
 
-    @Override public List<Set<Integer>> calculateMovements(GameInput input) {
+    @Override
+    public List<Set<Integer>> calculateMovements(GameInput input) {
+
+        if (input == null || input.getRow() <= 0 || input.getColumn() <= 0 || input.getPosition().isEmpty()) {
+            Gson gson = new Gson();
+            throw new InvalidRequestException("Invalid user request." + gson.toJson(input));
+        }
 
         List<Set<Integer>> movements = new ArrayList<>();
 
@@ -50,9 +58,7 @@ public class GameServiceImpl implements GameService {
         });
 
         if (initialPos.contains(currentCell)) {
-            if (liveCellsCount.get() < 2) {
-                return 0;
-            } else if (liveCellsCount.get() > 1 && liveCellsCount.get() < 4) {
+            if (liveCellsCount.get() > 1 && liveCellsCount.get() < 4) {
                 return 1;
             } else {
                 return 0;
