@@ -29,14 +29,17 @@ public class GameServiceImpl implements GameService {
         List<Set<Integer>> movements = new ArrayList<>();
 
         int initialSize = input.getPosition().size();
+        // Stop if the original size of the input has reduced -> Approached end of the grid
         while (input.getPosition().size() >= initialSize) {
 
             Set<Integer> initialPos = input.getPosition();
             Set<Integer> tempSet = new HashSet<>();
+            // Identify the neighbour cell for each of the live cells
             input.getPosition().stream().forEach(g -> tempSet.addAll(findNeighbours(g, input.getRow(), input.getColumn())));
 
             input.setPosition(new HashSet<>());
             tempSet.stream().forEach(g -> {
+                // For each of the neighbours of the live cells identify whether they will be alive in next gen
                 if (isAlive(g, initialPos, findNeighbours(g, input.getRow(), input.getColumn())) == 1) {
                     input.getPosition().add(g);
                 }
@@ -48,6 +51,14 @@ public class GameServiceImpl implements GameService {
         return movements;
     }
 
+    /**
+     * This method identifies whether the given cell will be alive or not in the nextGen based on the GameOfLife Rules
+     *
+     * @param currentCell
+     * @param initialPos
+     * @param neighbourCells
+     * @return
+     */
     private int isAlive(int currentCell, Set<Integer> initialPos, Set<Integer> neighbourCells) {
 
         AtomicInteger liveCellsCount = new AtomicInteger(0);
@@ -72,7 +83,15 @@ public class GameServiceImpl implements GameService {
         }
     }
 
-    private Set<Integer> findNeighbours(Integer g, int row, int column) {
+    /**
+     * This Method identifies the neighbour for the current cell
+     *
+     * @param g
+     * @param row
+     * @param column
+     * @return
+     */
+    private Set<Integer> findNeighbours(Integer currentCell, int row, int column) {
         Set<Integer> neighbours = new HashSet<>();
 
         boolean isLeftPossible = false;
@@ -81,43 +100,43 @@ public class GameServiceImpl implements GameService {
         boolean isTopPossible = false;
 
         // Left
-        if (g - 1 > 0 && ((g - 1) % column) != 0) {
+        if (currentCell - 1 > 0 && ((currentCell - 1) % column) != 0) {
             isLeftPossible = true;
-            neighbours.add(g - 1);
+            neighbours.add(currentCell - 1);
         }
         //Right
-        if (g + 1 % column != 1) {
+        if (currentCell + 1 % column != 1) {
             isRightPossible = true;
-            neighbours.add(g + 1);
+            neighbours.add(currentCell + 1);
         }
         // Top
-        if (g - column > 0) {
+        if (currentCell - column > 0) {
             isTopPossible = true;
-            neighbours.add(g - column);
+            neighbours.add(currentCell - column);
         }
         //Bottom
-        if (g + column < (row * column)) {
+        if (currentCell + column < (row * column)) {
             isBottomPossible = true;
-            neighbours.add(g + column);
+            neighbours.add(currentCell + column);
         }
 
         if (isLeftPossible && isBottomPossible) {
             //BottomLeft
-            neighbours.add(g + (column - 1));
+            neighbours.add(currentCell + (column - 1));
         }
 
         if (isRightPossible && isTopPossible) {
             //TopRight
-            neighbours.add(g - (column - 1));
+            neighbours.add(currentCell - (column - 1));
         }
 
         if (isTopPossible && isLeftPossible) {
             //TopLeft
-            neighbours.add(g - (column + 1));
+            neighbours.add(currentCell - (column + 1));
         }
         if (isBottomPossible && isRightPossible) {
             //BottomRight
-            neighbours.add(g + (column + 1));
+            neighbours.add(currentCell + (column + 1));
         }
 
         return neighbours;
