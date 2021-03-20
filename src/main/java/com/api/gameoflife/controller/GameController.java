@@ -36,8 +36,8 @@ public class GameController {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Success|Created full set of live cells for each generation"),
             @ApiResponse(code = 400, message = "Invalid format of user input")})
-    public ResponseEntity<List<Set<Integer>>> gameOfLife(@RequestBody GameInput input) {
-        log.info("Game request received for Row[{}] Column[{}] initialPosition [{}]", input.getRow(), input.getColumn(), input.getPosition());
+    public ResponseEntity<Set<Integer>> gameOfLife(@RequestBody GameInput input) {
+        log.info("Game request received for Row[{}] Column[{}] initialPosition {}", input.getRow(), input.getColumn(), input.getPosition());
         return new ResponseEntity<>(gameService.calculateMovements(input), HttpStatus.OK);
     }
 

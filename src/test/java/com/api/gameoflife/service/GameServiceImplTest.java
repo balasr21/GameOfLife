@@ -2,7 +2,6 @@ package com.api.gameoflife.service;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
@@ -24,13 +23,53 @@ class GameServiceImplTest {
     }
 
     @Test
-    void testCalculateMovements() {
+    void testCalculateMovements__1() {
         Gson gson = new Gson();
         GameInput input = GameInput.builder().row(5).column(8).position(new HashSet<>(Arrays.asList(10, 19, 25, 26, 27))).build();
-        List<Set<Integer>> result = gameService.calculateMovements(input);
+        Set<Integer> result = gameService.calculateMovements(input);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(5, result.size());
-        Assertions.assertEquals("[[17,34,19,26,27],[34,35,19,25,27],[34,18,35,27,28],[34,35,19,36,28],[35,36,26,28]]", gson.toJson(result));
+        Assertions.assertEquals("[17,34,19,26,27]", gson.toJson(result));
+    }
+
+    @Test
+    void testCalculateMovements__2() {
+        Gson gson = new Gson();
+        GameInput input = GameInput.builder().row(5).column(8).position(new HashSet<>(Arrays.asList(17, 34, 19, 26, 27))).build();
+        Set<Integer> result = gameService.calculateMovements(input);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(5, result.size());
+        Assertions.assertEquals("[34,35,19,25,27]", gson.toJson(result));
+    }
+
+    @Test
+    void testCalculateMovements__3() {
+        Gson gson = new Gson();
+        GameInput input = GameInput.builder().row(5).column(8).position(new HashSet<>(Arrays.asList(34, 35, 19, 25, 27))).build();
+        Set<Integer> result = gameService.calculateMovements(input);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(5, result.size());
+        Assertions.assertEquals("[34,18,35,27,28]", gson.toJson(result));
+    }
+
+    @Test
+    void testCalculateMovements__4() {
+        Gson gson = new Gson();
+        GameInput input = GameInput.builder().row(5).column(8).position(new HashSet<>(Arrays.asList(34, 18, 35, 27, 28))).build();
+        Set<Integer> result = gameService.calculateMovements(input);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(5, result.size());
+        Assertions.assertEquals("[34,35,19,36,28]", gson.toJson(result));
+    }
+
+    @Test
+    void testCalculateMovements__5() {
+        Gson gson = new Gson();
+        GameInput input = GameInput.builder().row(5).column(8).position(new HashSet<>(Arrays.asList(34, 35, 19, 36, 28))).build();
+        Set<Integer> result = gameService.calculateMovements(input);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(4, result.size());
+        Assertions.assertEquals("[35,36,26,28]", gson.toJson(result));
     }
 
     @Test

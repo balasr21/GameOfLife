@@ -19,35 +19,29 @@ import lombok.extern.slf4j.Slf4j;
 public class GameServiceImpl implements GameService {
 
     @Override
-    public List<Set<Integer>> calculateMovements(GameInput input) {
+    public Set<Integer> calculateMovements(GameInput input) {
 
         if (input == null || input.getRow() <= 0 || input.getColumn() <= 0 || input.getPosition().isEmpty()) {
             Gson gson = new Gson();
+            log.error("Invalid user request.", gson.toJson(input));
             throw new InvalidRequestException("Invalid user request." + gson.toJson(input));
         }
 
-        List<Set<Integer>> movements = new ArrayList<>();
+        Set<Integer> movements = new HashSet<>();
 
-        int initialSize = input.getPosition().size();
-        // Stop if the original size of the input has reduced -> Approached end of the grid
-        while (input.getPosition().size() >= initialSize) {
+        Set<Integer> initialPos = input.getPosition();
+        Set<Integer> tempSet = new HashSet<>();
+        // Identify the neighbour cell for each of the live cells
+        input.getPosition().stream().forEach(g -> tempSet.addAll(findNeighbours(g, input.getRow(), input.getColumn())));
 
-            Set<Integer> initialPos = input.getPosition();
-            Set<Integer> tempSet = new HashSet<>();
-            // Identify the neighbour cell for each of the live cells
-            input.getPosition().stream().forEach(g -> tempSet.addAll(findNeighbours(g, input.getRow(), input.getColumn())));
-
-            input.setPosition(new HashSet<>());
-            tempSet.stream().forEach(g -> {
-                // For each of the neighbours of the live cells identify whether they will be alive in next gen
-                if (isAlive(g, initialPos, findNeighbours(g, input.getRow(), input.getColumn())) == 1) {
-                    input.getPosition().add(g);
-                }
-            });
-            movements.add(input.getPosition());
-
-        }
-
+        input.setPosition(new HashSet<>());
+        tempSet.stream().forEach(g -> {
+            // For each of the neighbours of the live cells identify whether they will be alive in next gen
+            if (isAlive(g, initialPos, findNeighbours(g, input.getRow(), input.getColumn())) == 1) {
+                input.getPosition().add(g);
+            }
+        });
+        movements.addAll(input.getPosition());
         return movements;
     }
 
@@ -86,7 +80,7 @@ public class GameServiceImpl implements GameService {
     /**
      * This Method identifies the neighbour for the current cell
      *
-     * @param g
+     * @param currentCell
      * @param row
      * @param column
      * @return
